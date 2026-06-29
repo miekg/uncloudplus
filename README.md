@@ -11,6 +11,13 @@
   </p>
 </div>
 
+> Uncloud + 2 PRs
+
+- https://github.com/psviderski/uncloud/pull/359 - dns set
+- https://github.com/psviderski/uncloud/pull/365 - extra machine names
+
+---
+
 Uncloud is a lightweight clustering and container orchestration tool that lets you deploy and manage web apps across
 cloud VMs and bare metal with minimised cluster management overhead. It creates a secure WireGuard mesh network between
 your Docker hosts and provides automatic service discovery, load balancing, ingress with HTTPS, and simple CLI commands
@@ -25,27 +32,27 @@ complexity of Kubernetes.
 
 ## ✨ Features
 
-* **Deploy anywhere**: Combine cloud VMs, dedicated servers, and bare metal into a unified computing environment,
+- **Deploy anywhere**: Combine cloud VMs, dedicated servers, and bare metal into a unified computing environment,
   regardless of location or provider.
-* **Docker Compose**: Familiar [Docker Compose](https://compose-spec.io/) format for defining services and volumes. No
+- **Docker Compose**: Familiar [Docker Compose](https://compose-spec.io/) format for defining services and volumes. No
   need to learn a new bespoke DSL.
-* **Zero-downtime deployments**: Rolling updates without service interruption. Automatic rollback on failure is coming
+- **Zero-downtime deployments**: Rolling updates without service interruption. Automatic rollback on failure is coming
   soon.
-* **[Unregistry](https://github.com/psviderski/unregistry) integration**: Build and push your Docker images directly to
+- **[Unregistry](https://github.com/psviderski/unregistry) integration**: Build and push your Docker images directly to
   your machines without an external registry. It will transfer only the missing layers, making it fast and efficient.
-* **Service discovery**: Built-in DNS server resolves service names to container IPs.
-* **Persistent storage**: Run stateful services with Docker volumes managed across machines.
-* **Zero-config private network**: Automatic WireGuard mesh with peer discovery and NAT traversal. Containers get unique
+- **Service discovery**: Built-in DNS server resolves service names to container IPs.
+- **Persistent storage**: Run stateful services with Docker volumes managed across machines.
+- **Zero-config private network**: Automatic WireGuard mesh with peer discovery and NAT traversal. Containers get unique
   IPs for direct cross-machine communication.
-* **No control plane**: Fully decentralised design eliminates single points of failure and reduces operational overhead.
-* **Imperative over declarative**: Favoring imperative operations over state reconciliation simplifies both the mental
+- **No control plane**: Fully decentralised design eliminates single points of failure and reduces operational overhead.
+- **Imperative over declarative**: Favoring imperative operations over state reconciliation simplifies both the mental
   model and troubleshooting.
-* **Managed DNS**: Automatic DNS records `*.xxxxxx.uncld.dev` for services with public access via managed
+- **Managed DNS**: Automatic DNS records `*.xxxxxx.uncld.dev` for services with public access via managed
   [Uncloud DNS](https://github.com/psviderski/uncloud-dns) service.
-* **Automatic HTTPS**: Built-in Caddy reverse proxy handles TLS certificate provisioning and renewal using Let's
+- **Automatic HTTPS**: Built-in Caddy reverse proxy handles TLS certificate provisioning and renewal using Let's
   Encrypt.
-* **Docker-like CLI**: Familiar commands for managing both infrastructure and applications.
-* **Remote management**: Control your entire infrastructure through SSH access to any single machine in the cluster.
+- **Docker-like CLI**: Familiar commands for managing both infrastructure and applications.
+- **Remote management**: Control your entire infrastructure through SSH access to any single machine in the cluster.
 
 ## 🎬 Quick demo
 
@@ -77,14 +84,14 @@ container orchestrators like Kubernetes provide power and flexibility but requir
 believe there's a sweet spot in between — a pragmatic solution for the majority of us who aren't running at Google
 scale. You should be able to:
 
-* **Own your infrastructure and data**: Whether driven by costs, compliance, or flexibility, run applications on any
+- **Own your infrastructure and data**: Whether driven by costs, compliance, or flexibility, run applications on any
   combination of cloud VMs and personal hardware while controlling your data and maintaining the cloud-like experience
   you love.
-* **Stay simple as you grow**: Start with a single machine and add more whenever you need without changing your
+- **Stay simple as you grow**: Start with a single machine and add more whenever you need without changing your
   workflow. No worrying about highly-available control planes or complex YAML configurations.
-* **Build with proven primitives**: Get production-grade networking, deployment primitives, service discovery, load
+- **Build with proven primitives**: Get production-grade networking, deployment primitives, service discovery, load
   balancing, and ingress with HTTPS out of the box without becoming a distributed systems expert.
-* **Support sustainable computing** 🌿: Minimise system overhead to maximise resources available for your applications.
+- **Support sustainable computing** 🌿: Minimise system overhead to maximise resources available for your applications.
 
 Uncloud's goal is to make deployment and management of containerised applications feel as seamless as using a cloud
 platform, whether you're running on a $5 VPS, a spare Mac mini, or a rack of bare metal servers.
@@ -282,6 +289,7 @@ Look ma, no control plane or master nodes to maintain! Just a simple overlay net
 sync that lets machines work together. Want to check on things or make changes? Connect to any machine either implicitly
 using the CLI or directly over SSH. They all have the complete cluster state and can control everything. It's like each
 machine is a full backup of your control plane.
+
 </details>
 
 ## 🧪 Interactive tutorials
@@ -307,29 +315,29 @@ WireGuard, and Corrosion.
 
 We'd love your input! Here's how you can contribute:
 
-* 🐛 Found a bug? [Open an issue](https://github.com/psviderski/uncloud/issues)
-* 💡 Have questions, ideas, or need help?
-    * Start a discussion or join an existing one in
-      the [Discussions](https://github.com/psviderski/uncloud/discussions).
-    * Join our [Discord community](https://discord.gg/eR35KQJhPu) where we discuss features, roadmap, implementation
-      details, and help each other out.
+- 🐛 Found a bug? [Open an issue](https://github.com/psviderski/uncloud/issues)
+- 💡 Have questions, ideas, or need help?
+  - Start a discussion or join an existing one in
+    the [Discussions](https://github.com/psviderski/uncloud/discussions).
+  - Join our [Discord community](https://discord.gg/eR35KQJhPu) where we discuss features, roadmap, implementation
+    details, and help each other out.
 
 ## 🙏 Inspiration & Acknowledgements
 
 I'm grateful to the following projects that inspired Uncloud's design and implementation:
 
-* [Kamal](https://kamal-deploy.org/) — for proving that even in the declarative era of Kubernetes there is a place for
+- [Kamal](https://kamal-deploy.org/) — for proving that even in the declarative era of Kubernetes there is a place for
   simple deployment tools that use imperative commands without complex orchestration. Kamal powers the multi-billion
   dollar company [37signals](https://37signals.com/) where it was created, and that's truly inspiring!
-* [Fly.io](https://fly.io/) — for inspiring my vision for what self-hosted infrastructure should feel like, proving that
+- [Fly.io](https://fly.io/) — for inspiring my vision for what self-hosted infrastructure should feel like, proving that
   developer experience and powerful infrastructure can coexist beautifully.
-* [Tailscale](https://tailscale.com/) — for pioneering the vision of decentralised flat mesh networking with an amazing
+- [Tailscale](https://tailscale.com/) — for pioneering the vision of decentralised flat mesh networking with an amazing
   user experience that feels like magic.
-* [Talos Linux](https://github.com/siderolabs/talos)
+- [Talos Linux](https://github.com/siderolabs/talos)
   and [KubeSpan](https://www.talos.dev/v1.10/talos-guides/network/kubespan/) — for the machine API design using
   [grpc-proxy](https://github.com/siderolabs/grpc-proxy) and for its elegant approach to secure WireGuard-based overlay
   networking with zero configuration.
-* [Docker Swarm Classic](https://github.com/docker-archive/classicswarm) and
+- [Docker Swarm Classic](https://github.com/docker-archive/classicswarm) and
   [Rancher 1.x](http://rancher-com-website-main-elb-elb-1798790864.us-west-2.elb.amazonaws.com/docs/rancher/v1.6/en/)
   — for showing the power of simplicity and pragmatism in container orchestration and that not every problem needs the
   complexity of Kubernetes.
@@ -339,11 +347,11 @@ SQLite database used to share Uncloud's cluster state.
 
 ## 📫 Stay updated
 
-* Join our [Discord server](https://discord.gg/eR35KQJhPu) for real-time discussions, support, and updates.
-* Follow [@psviderski](https://x.com/psviderski) on X/Twitter.
-* Subscribe to [our newsletter](https://uncloud.run/#subscribe) to follow the journey of building Uncloud: progress
+- Join our [Discord server](https://discord.gg/eR35KQJhPu) for real-time discussions, support, and updates.
+- Follow [@psviderski](https://x.com/psviderski) on X/Twitter.
+- Subscribe to [our newsletter](https://uncloud.run/#subscribe) to follow the journey of building Uncloud: progress
   updates, user stories, and the occasional deep dive.
-* Watch this repository for releases.
+- Watch this repository for releases.
 
 ## 💖 Sponsors
 
