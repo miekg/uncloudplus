@@ -40,13 +40,19 @@ func NewAddCommand() *cobra.Command {
 		Short: "Add a remote machine to a cluster.",
 		Long: `Add a new machine to an existing Uncloud cluster.
 
+By default, it installs Docker and the Uncloud daemon on the machine over SSH unless --no-install
+is specified, which assumes they are already installed and running.
+
 Connection methods:
   [ssh://]user@host   - Use system 'ssh' command with full SSH config support (default, no prefix required)
   ssh+go://user@host  - Use Go's built-in SSH library`,
 		Args: cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(cmd *cobra.Command, args []string) error {
 			cli.BindEnvToFlag(cmd, "yes", "UNCLOUD_AUTO_CONFIRM")
-
+			cli.BindEnvToFlag(cmd, "version", "UNCLOUD_DAEMON_VERSION")
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
 			uncli := cmd.Context().Value("cli").(*cli.CLI)
 
 			// Determine connection mode and strip scheme.
@@ -79,7 +85,7 @@ Connection methods:
 	)
 	cmd.Flags().BoolVar(
 		&opts.noInstall, "no-install", false,
-		"Skip installation of Docker, Uncloud daemon, and dependencies on the machine. "+
+		"Skip installation of Docker and the Uncloud daemon on the machine. "+
 			"Assumes they're already installed and running.",
 	)
 	cmd.Flags().StringVar(
@@ -94,7 +100,7 @@ Connection methods:
 	)
 	cmd.Flags().StringVar(
 		&opts.version, "version", "latest",
-		"Version of the Uncloud daemon to install on the machine.",
+		"Version of the Uncloud daemon to install on the machine. [$UNCLOUD_DAEMON_VERSION]",
 	)
 	cmd.Flags().StringSliceVar(
 		&opts.wgEndpoints, "wg-endpoint", nil,
