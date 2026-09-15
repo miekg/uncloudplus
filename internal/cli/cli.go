@@ -8,9 +8,9 @@ import (
 	"slices"
 
 	"github.com/docker/cli/cli/streams"
+	"github.com/psviderski/uncloud/api/pb"
 	"github.com/psviderski/uncloud/internal/cli/config"
 	"github.com/psviderski/uncloud/internal/machine"
-	"github.com/psviderski/uncloud/internal/machine/api/pb"
 	"github.com/psviderski/uncloud/internal/machine/cluster"
 	"github.com/psviderski/uncloud/internal/machine/network"
 	"github.com/psviderski/uncloud/internal/sshexec"
@@ -458,7 +458,7 @@ func (cli *CLI) AddMachine(ctx context.Context, opts AddMachineOptions) (_ *clie
 	}
 
 	// Snapshot the cluster store version so the new machine can catch up before participating.
-	var storeVersion map[string]int64
+	var storeVersion map[string]uint64
 	inspectResp, err = c.MachineClient.InspectMachine(ctx, &emptypb.Empty{})
 	if err != nil {
 		// TODO(lhf): remove Unimplemented check when v0.17.0 is released.

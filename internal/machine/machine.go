@@ -21,14 +21,15 @@ import (
 	"github.com/containerd/errdefs"
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/sockets"
+	"github.com/psviderski/uncloud/api/pb"
 	"github.com/psviderski/uncloud/internal/corrosion"
 	"github.com/psviderski/uncloud/internal/docker"
 	"github.com/psviderski/uncloud/internal/fs"
 	"github.com/psviderski/uncloud/internal/grpcversion"
 	"github.com/psviderski/uncloud/internal/journal"
-	"github.com/psviderski/uncloud/internal/machine/api/pb"
 	apiproxy "github.com/psviderski/uncloud/internal/machine/api/proxy"
 	"github.com/psviderski/uncloud/internal/machine/caddyconfig"
+	"github.com/psviderski/uncloud/internal/machine/caddystorage"
 	"github.com/psviderski/uncloud/internal/machine/cluster"
 	"github.com/psviderski/uncloud/internal/machine/constants"
 	"github.com/psviderski/uncloud/internal/machine/corromigrate"
@@ -42,6 +43,8 @@ import (
 	"github.com/psviderski/uncloud/internal/secret"
 	"github.com/psviderski/uncloud/internal/version"
 	"github.com/psviderski/uncloud/pkg/api"
+	"github.com/psviderski/uncloud/pkg/distlock"
+	distlockgrpc "github.com/psviderski/uncloud/pkg/distlock/grpc"
 	"github.com/psviderski/unregistry"
 	"github.com/siderolabs/grpc-proxy/proxy"
 	"golang.org/x/sync/errgroup"
@@ -305,7 +308,15 @@ func NewMachine(config *Config) (*Machine, error) {
 		WaitForNetworkReady: m.WaitForNetworkReady,
 	})
 	caddyServer := caddyconfig.NewServer(caddyconfig.NewService(config.CaddyConfigDir))
-	m.localMachineServer = newGRPCServer(m, c, m.dockerServer, caddyServer)
+
+	caddyStore, err := corroStore.Keyspace(caddystorage.Namespace)
+	if err != nil {
+		return nil, fmt.Errorf("create namespaced cluster store for Caddy storage: %w", err)
+	}
+	caddyStorageServer := caddystorage.NewServer(caddyStore)
+
+	leaseServer := distlockgrpc.NewServer(distlock.NewMemoryStore())
+	m.localMachineServer = newGRPCServer(m, c, m.dockerServer, caddyServer, caddyStorageServer, leaseServer)
 
 	if m.Initialised() {
 		close(m.initialised)
@@ -314,12 +325,21 @@ func NewMachine(config *Config) (*Machine, error) {
 	return m, nil
 }
 
-func newGRPCServer(m pb.MachineServer, c pb.ClusterServer, d pb.DockerServer, caddy pb.CaddyServer) *grpc.Server {
+func newGRPCServer(
+	m pb.MachineServer,
+	c pb.ClusterServer,
+	d pb.DockerServer,
+	caddy pb.CaddyServer,
+	caddyStorage pb.CaddyStorageServer,
+	lease distlockgrpc.LeaseServer,
+) *grpc.Server {
 	s := grpc.NewServer()
 	pb.RegisterMachineServer(s, m)
 	pb.RegisterClusterServer(s, c)
 	pb.RegisterDockerServer(s, d)
 	pb.RegisterCaddyServer(s, caddy)
+	pb.RegisterCaddyStorageServer(s, caddyStorage)
+	distlockgrpc.RegisterLeaseServer(s, lease)
 	return s
 }
 
@@ -1102,6 +1122,19 @@ func (m *Machine) InspectMachine(ctx context.Context, _ *emptypb.Empty) (*pb.Ins
 			},
 		},
 	}, nil
+}
+
+func (m *Machine) WaitForStoreVersion(ctx context.Context, req *pb.WaitForStoreVersionRequest) (*emptypb.Empty, error) {
+	if err := m.store.WaitForVersion(ctx, req.MinVersion); err != nil {
+		if ctx.Err() != nil {
+			return nil, status.FromContextError(ctx.Err()).Err()
+		}
+		if errors.Is(err, store.ErrInvalidStoreVersion) {
+			return nil, status.Error(codes.InvalidArgument, err.Error())
+		}
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	return &emptypb.Empty{}, nil
 }
 
 // UpdateMachine updates the configuration of this machine in its local state (the source of truth) and syncs

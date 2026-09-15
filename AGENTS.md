@@ -188,7 +188,7 @@ uc context use <name>           # Switch context
 - **Package naming**: Use clear, descriptive names
 - **Error handling**: Wrap errors with context using `fmt.Errorf`
 - **Logging**: Use structured logging with levels
-- **gRPC**: Services defined in `internal/machine/api/pb/`
+- **gRPC**: Services defined in `api/pb/`
 
 ### Testing
 
